@@ -1,13 +1,17 @@
-import Navigation from '@/components/site/navigation'
-import React from 'react'
+import Navigation from "@/components/site/navigation";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import React from "react";
 
-const Layout = ({children}: {children: React.ReactNode}) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="h-full">
-        <Navigation/>
+    <ClerkProvider appearance={{ baseTheme: dark }}>
+      <main className="h-full">
+        <Navigation />
         {children}
-    </main>
-  )
-}
+      </main>
+    </ClerkProvider>
+  );
+};
 
-export default Layout
+export default Layout;
