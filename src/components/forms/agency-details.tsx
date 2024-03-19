@@ -3,6 +3,7 @@ import { Agency } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
+import { v4 } from "uuid";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,8 +41,10 @@ import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
 import {
   deleteAgency,
+  initUser,
   saveActivityLogsNotification,
   updateAgencyDetails,
+  upsertAgency,
 } from "@/lib/queries";
 import { Button } from "../ui/button";
 import Loading from "../global/loading";
@@ -91,10 +94,10 @@ const AgencyDetails = ({ data }: Props) => {
     }
   }, [data]);
 
-  const handleSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof FormSchema>) => {
     try {
-      let newUserData
-      let custId
+      let newUserData;
+      let custId;
       if (!data?.id) {
         const bodyData = {
           email: values.companyEmail,
@@ -116,9 +119,41 @@ const AgencyDetails = ({ data }: Props) => {
             postal_code: values.zipCode,
             state: values.zipCode,
           },
-        }
+        };
+      }
+
+      //WIP CustId
+      newUserData = await initUser({ role: "AGENCY_OWNER" });
+      if (!data?.id) {
+        const response = await upsertAgency({
+          id: data?.id ? data.id : v4(),
+          address: values.address,
+          agencyLogo: values.agencyLogo,
+          city: values.city,
+          companyPhone: values.companyPhone,
+          country: values.country,
+          name: values.name,
+          state: values.state,
+          whiteLabel: values.whiteLabel,
+          zipCode: values.zipCode,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          companyEmail: values.companyEmail,
+          connectAccountId: "",
+          goal: 5,
+        });
+        toast({
+          title: "created Agency",
+        });
+        return router.refresh();
+      }
     } catch (error) {
-      
+      console.log(error);
+      toast({
+        variant: "destructive",
+        title: "oops!",
+        description: "could not create your agency",
+      });
     }
   };
 
