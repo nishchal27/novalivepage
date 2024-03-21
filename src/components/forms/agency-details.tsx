@@ -430,7 +430,6 @@ const AgencyDetails = ({ data }: Props) => {
       </Card>
     </AlertDialog>
   );
-  return <div>AgencyDetails</div>;
 };
 
 export default AgencyDetails;

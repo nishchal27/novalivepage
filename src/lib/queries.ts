@@ -3,7 +3,8 @@
 import { clerkClient, currentUser } from "@clerk/nextjs"
 import { db } from "./db"
 import { redirect } from "next/navigation"
-import { Agency, Plan, User } from "@prisma/client"
+import { Agency, Plan, SubAccount, User } from "@prisma/client"
+import { v4 } from "uuid"
 
 export const getAuthUserDetails = async () => {
     const user = await currentUser()
@@ -31,6 +32,15 @@ export const getAuthUserDetails = async () => {
     return userData
 }
 
+/**
+ * Saves an activity log notification for a user, agency, and optionally a subaccount.
+ * If agencyId is not provided, it is inferred from the subaccountId.
+ * @param {Object} params - Parameters for saving activity log notification.
+ * @param {string} params.agencyId - The ID of the agency (optional if subaccountId is provided).
+ * @param {string} params.description - The description of the activity log.
+ * @param {string} params.subaccountId - The ID of the subaccount (optional).
+ * @returns {Promise<void>} - A promise that resolves when the notification is saved.
+ */
 export const saveActivityLogsNotification = async ({
     agencyId,
     description,
@@ -40,8 +50,11 @@ export const saveActivityLogsNotification = async ({
     description: string,
     subaccountId?: string
 }) => {
+    // Retrieve current authenticated user
     const authUser = await currentUser()
     let userData;
+
+    // If there is no authenticated user, find user data based on subaccountId
     if (!authUser) {
         const response = await db.user.findFirst({
             where: {
@@ -54,17 +67,21 @@ export const saveActivityLogsNotification = async ({
             userData = response
         }
     } else {
+        // If there is an authenticated user, find user data based on email
         userData = await db.user.findUnique({
             where: { email: authUser?.emailAddresses[0].emailAddress },
         })
     }
 
+    // If no user data found, log an error and return
     if (!userData) {
         console.log("Could not find a user")
         return
     }
 
     let foundAgencyId = agencyId
+
+    // If agencyId is not provided, attempt to find it from subaccountId
     if (!foundAgencyId) {
         if (!subaccountId) {
             throw new Error('you need to provide an agency Id or subaccount Id')
@@ -74,6 +91,8 @@ export const saveActivityLogsNotification = async ({
         })
         if (response) foundAgencyId = response.agencyId
     }
+
+    // Create notification based on whether subaccountId is provided or not
     if (subaccountId) {
         await db.notification.create({
             data: {
@@ -265,5 +284,109 @@ export const upsertAgency = async (agency: Agency, price?: Plan) => {
     } catch (error) {
         console.log(error)
     }
+}
+
+export const getNotificationAndUser = async (agencyId: string) => {
+    try {
+        const response = await db.notification.findMany({
+            where: { agencyId },
+            include: { User: true },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })
+        return response
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+/**
+ * Upserts a subaccount with provided data.
+ * If the subaccount's company email is not provided, returns null.
+ * Creates a new subaccount if it does not exist; otherwise, updates the existing one.
+ */
+export const upsertSubAccount = async (subAccount: SubAccount) => {
+    if (!subAccount.companyEmail) return null
+
+    // Find agency owner based on agency ID and role
+    const agencyOwner = await db.user.findFirst({
+        where: {
+            Agency: {
+                id: subAccount.agencyId,
+            },
+            role: 'AGENCY_OWNER',
+        },
+    })
+    if (!agencyOwner) return console.log('🔴Erorr could not create subaccount')
+    const permissionId = v4()
+
+    // Upsert subaccount with provided data
+    const response = await db.subAccount.upsert({
+        where: { id: subAccount.id },
+        update: subAccount,
+        create: {
+            ...subAccount,
+            Permissions: {
+                create: {
+                    access: true,
+                    email: agencyOwner.email,
+                    id: permissionId,
+                },
+                connect: {
+                    subAccountId: subAccount.id,
+                    id: permissionId,
+                },
+            },
+            Pipeline: {
+                create: { name: 'Lead Cycle' },
+            },
+            SidebarOption: {
+                create: [
+                    {
+                        name: 'Launchpad',
+                        icon: 'clipboardIcon',
+                        link: `/subaccount/${subAccount.id}/launchpad`,
+                    },
+                    {
+                        name: 'Settings',
+                        icon: 'settings',
+                        link: `/subaccount/${subAccount.id}/settings`,
+                    },
+                    {
+                        name: 'Funnels',
+                        icon: 'pipelines',
+                        link: `/subaccount/${subAccount.id}/funnels`,
+                    },
+                    {
+                        name: 'Media',
+                        icon: 'database',
+                        link: `/subaccount/${subAccount.id}/media`,
+                    },
+                    {
+                        name: 'Automations',
+                        icon: 'chip',
+                        link: `/subaccount/${subAccount.id}/automations`,
+                    },
+                    {
+                        name: 'Pipelines',
+                        icon: 'flag',
+                        link: `/subaccount/${subAccount.id}/pipelines`,
+                    },
+                    {
+                        name: 'Contacts',
+                        icon: 'person',
+                        link: `/subaccount/${subAccount.id}/contacts`,
+                    },
+                    {
+                        name: 'Dashboard',
+                        icon: 'category',
+                        link: `/subaccount/${subAccount.id}`,
+                    },
+                ],
+            },
+        },
+    })
+    return response
 }
 
