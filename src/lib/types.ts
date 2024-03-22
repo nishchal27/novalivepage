@@ -8,6 +8,7 @@ import {
     Ticket,
     User,
 } from '@prisma/client'
+import { getAuthUserDetails, getUserPermissions } from './queries'
 
 export type NotificationWithUser =
     | ({
@@ -23,3 +24,11 @@ export type NotificationWithUser =
         }
     } & Notification)[]
     | undefined
+
+
+export type UserWithPermissionsAndSubAccounts = Prisma.PromiseReturnType<
+    typeof getUserPermissions
+>
+
+export type AuthUserWithAgencySidebarOptionsSubAccounts =
+  Prisma.PromiseReturnType<typeof getAuthUserDetails>

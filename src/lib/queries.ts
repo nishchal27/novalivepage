@@ -203,6 +203,7 @@ export const deleteAgency = async (agencyId: string) => {
     return response
 }
 
+//upsert: update data if it exists or create new data if it doesn't
 // initializing user
 export const initUser = async (newUser: Partial<User>) => {
     const user = await currentUser()
@@ -390,3 +391,57 @@ export const upsertSubAccount = async (subAccount: SubAccount) => {
     return response
 }
 
+// Query the database to find the user's permissions
+export const getUserPermissions = async (userId: string) => {
+    const response = await db.user.findUnique({
+        where: { id: userId }, //Query based on user ID
+        select: { Permissions: { include: { SubAccount: true } } }, // Include permissions: all the subaccounts that the user has access to
+    })
+
+    // Return the retrieved permissions
+    return response
+}
+
+/*
+Returns a Promise resolving to the updated user object.
+*/
+export const updateUser = async (user: Partial<User>) => {
+    // Update user information in the database
+    const response = await db.user.update({
+        where: { email: user.email },
+        data: { ...user },
+    })
+
+    // Update user's private metadata using ClerkClient in clerk
+    await clerkClient.users.updateUserMetadata(response.id, {
+        privateMetadata: {
+            role: user.role || 'SUBACCOUNT_USER',
+        },
+    })
+
+    // Return the updated user object
+    return response
+}
+
+//change permission: update or create new permission
+export const changeUserPermissions = async (
+    permissionId: string | undefined,
+    userEmail: string,
+    subAccountId: string,
+    permission: boolean
+) => {
+    try {
+        const response = await db.permissions.upsert({
+            where: { id: permissionId },
+            update: { access: permission },
+            create: {
+                access: permission,
+                email: userEmail,
+                subAccountId: subAccountId,
+            },
+        })
+        return response
+    } catch (error) {
+        console.log('🔴Could not change persmission', error)
+    }
+}
