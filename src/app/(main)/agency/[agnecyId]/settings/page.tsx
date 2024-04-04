@@ -20,6 +20,7 @@ const SettingsPage = async ({ params }: Props) => {
   })
 
   if (!userDetails) return null
+  // throwing Error: Invalid `prisma.agency.findUnique()` invocation:
   //Temp: using manual id for to avoid undefined issue and error
   const agencyDetails = await db.agency.findUnique({
     where: {

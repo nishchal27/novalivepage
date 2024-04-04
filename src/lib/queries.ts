@@ -3,7 +3,7 @@
 import { clerkClient, currentUser } from "@clerk/nextjs"
 import { db } from "./db"
 import { redirect } from "next/navigation"
-import { Agency, Plan, SubAccount, User } from "@prisma/client"
+import { Agency, Plan, Role, SubAccount, User } from "@prisma/client"
 import { v4 } from "uuid"
 
 export const getAuthUserDetails = async () => {
@@ -462,4 +462,59 @@ export const deleteSubAccount = async (subaccountId: string) => {
         },
     })
     return response
+}
+
+export const deleteUser = async (userId: string) => {
+    await clerkClient.users.updateUserMetadata(userId, {
+        privateMetadata: {
+            role: undefined,
+        },
+    })
+    const deletedUser = await db.user.delete({ where: { id: userId } })
+
+    return deletedUser
+}
+
+export const getUser = async (id: string) => {
+    const user = await db.user.findUnique({
+        where: {
+            id,
+        },
+    })
+
+    return user
+}
+
+
+/*Sends an invitation to the specified email address for a given role within an agency. 
+ * only one agency per email address
+ * only one invitation per email address
+ * operation: const invitations = await prisma.invitation.findMany()
+ */
+export const sendInvitation = async (
+    role: Role,
+    email: string,
+    agencyId: string
+) => {
+    // Create an invitation record in the database, but only for unique email
+    const resposne = await db.invitation.create({
+        data: { email, agencyId, role },
+    })
+
+    try {
+        // Send invitation email using a third-party service
+        const invitation = await clerkClient.invitations.createInvitation({
+            emailAddress: email,
+            redirectUrl: process.env.NEXT_PUBLIC_URL,
+            publicMetadata: {
+                throughInvitation: true,
+                role,
+            },
+        })
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+
+    return resposne
 }

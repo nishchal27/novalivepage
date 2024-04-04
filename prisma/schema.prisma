@@ -1,4 +1,3 @@
-
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
@@ -373,6 +372,8 @@ enum InvitationStatus {
   PENDING
 }
 
+//only one invitation per email
+// operation: const invitations = await prisma.invitation.findMany()
 model Invitation {
   id       String           @id @default(uuid())
   email    String           @unique
