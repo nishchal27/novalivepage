@@ -289,6 +289,7 @@ const TicketForm = ({ getNewTicket, laneId, subaccountId }: Props) => {
                       //@ts-ignore
                       setSearch(value.target.value)
                       if (saveTimerRef.current)
+                        //clearing previous timer
                         clearTimeout(saveTimerRef.current)
                       saveTimerRef.current = setTimeout(async () => {
                         const response = await searchContacts(

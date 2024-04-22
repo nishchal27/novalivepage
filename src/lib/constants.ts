@@ -11,12 +11,12 @@ import Home from '@/components/icons/home'
 import Info from '@/components/icons/info'
 import LinkIcon from '@/components/icons/link'
 import Lock from '@/components/icons/lock'
-import Message from '@/components/icons/messages' 
+import Message from '@/components/icons/messages'
 import Notification from '@/components/icons/notification'
 import Payment from '@/components/icons/payment'
 import Person from '@/components/icons/person'
 import Pipelines from '@/components/icons/pipelines'
-import PluraCategory from '@/components/icons/plura-category'
+import NlpCategory from '@/components/icons/nlp-category'
 import Power from '@/components/icons/power'
 import Receipt from '@/components/icons/receipt'
 import Send from '@/components/icons/send'
@@ -31,7 +31,7 @@ import Warning from '@/components/icons/warning'
 export const pricingCards = [
   {
     title: 'Starter',
-    description: 'Perfect for trying out plura',
+    description: 'Perfect for trying out NLP',
     price: 'Free',
     duration: '',
     highlight: 'Key features',
@@ -45,7 +45,7 @@ export const pricingCards = [
     duration: 'month',
     highlight: 'Key features',
     features: ['Rebilling', '24/7 Support team'],
-    priceId: 'price_1OYxkqFj9oKEERu1KfJGWxgN',
+    priceId: 'price_1P8KnFSIH3V4ShOjowiQzOZv',
   },
   {
     title: 'Basic',
@@ -54,7 +54,7 @@ export const pricingCards = [
     duration: 'month',
     highlight: 'Everything in Starter, plus',
     features: ['Unlimited Sub accounts', 'Unlimited Team members'],
-    priceId: 'price_1OYxkqFj9oKEERu1NbKUxXxN',
+    priceId: 'price_1P8KnFSIH3V4ShOjyb8mL1XB',
   },
 ]
 
@@ -197,7 +197,7 @@ export const icons = [
   {
     value: 'category',
     label: 'Category',
-    path: PluraCategory,
+    path: NlpCategory,
   },
   {
     value: 'clipboardIcon',
