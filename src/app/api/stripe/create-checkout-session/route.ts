@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   }
 
   // Not needed unless we want to send payments to this account.
-  //CHALLENGE Transfer money to a connected
+  //Extra Feat Transfer money to a connected
   // const agencyIdConnectedAccountId = await db.subAccount.findUnique({
   //   where: { id: subaccountId },
   //   include: { Agency: true },

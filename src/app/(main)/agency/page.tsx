@@ -13,7 +13,7 @@ const Page = async ({
   //! throwing error: The table `invitation` does not exist in the current database.
   // when there is no invitation exits in db or no invitation is sent to the user
   const agencyId = await verifyAndAcceptInvitation();
-  console.log(agencyId);
+  console.log('agencyId',agencyId);
 
   //get the users details
   const user = await getAuthUserDetails();
