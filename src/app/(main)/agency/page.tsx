@@ -10,7 +10,6 @@ const Page = async ({
 }: {
   searchParams: { plan: Plan; state: string; code: string };
 }) => {
-  //! throwing error: The table `invitation` does not exist in the current database.
   // when there is no invitation exits in db or no invitation is sent to the user
   const agencyId = await verifyAndAcceptInvitation();
   console.log('agencyId',agencyId);

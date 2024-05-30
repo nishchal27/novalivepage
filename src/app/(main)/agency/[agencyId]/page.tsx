@@ -39,6 +39,8 @@ const Page = async ({
   const startDate = new Date(`${currentYear}-01-01T00:00:00Z`).getTime() / 1000
   const endDate = new Date(`${currentYear}-12-31T23:59:59Z`).getTime() / 1000
 
+
+  console.log("params.agencyId: ", params)
   const agencyDetails = await db.agency.findUnique({
     where: {
       id: params.agencyId,
