@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+# Nova-Live-page Website Builder, Project Management And Dashboard With stripe connect & payment using Nextjs14
+
 ### Features in this application.
 - 🤯 Multivendor B2B2B Saas
 - 🏢 Agency and Sub accounts
