@@ -28,7 +28,7 @@ const Navigation = ({ user }: Props) => {
         <ul className="flex items-center justify-center gap-8">
           <Link href={"#"}>Pricing</Link>
           <Link href={"#"}>About</Link>
-          <Link href={"#"}>Documentation</Link>
+          <Link target="_blank" href={"https://novalivepage.netlify.app/"}>Documentation</Link>
           <Link href={"#"}>Features</Link>
         </ul>
       </nav>

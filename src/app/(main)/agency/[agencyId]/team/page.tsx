@@ -25,15 +25,10 @@ const TeamPage = async ({ params }: Props) => {
   });
 
   if (!authUser) return null;
-  // throwing Error: Invalid `prisma.agency.findUnique()` invocation:
-  //Temp: using manual id for to avoid undefined issue and error
   const agencyDetails = await db.agency.findUnique({
     where: {
-      id: "90c01a32-5e4e-4a81-a3c8-cd34c1aabd45",
+      id: params.agencyId,
     },
-    // where: {
-    //   id: params.agencyId,
-    // },
     include: {
       SubAccount: true,
     },
