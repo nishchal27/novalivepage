@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "target": "esnext", // Use the latest ECMAScript features
+    "module": "commonjs", // Use CommonJS module system
+    "jsx": "react-jsx", // Use the appropriate JSX setting
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -21,6 +29,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", ".next"]
 }
