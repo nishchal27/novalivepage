@@ -1,7 +1,0 @@
-{
-    "baseUrl": "http://localhost:3000",
-    "integrationFolder": "tests/e2e/integration",
-    "fixturesFolder": "tests/e2e/fixtures",
-    "supportFile": "tests/e2e/support/index.js"
-  }
-  
