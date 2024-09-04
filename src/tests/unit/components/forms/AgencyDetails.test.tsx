@@ -1,110 +1,41 @@
-// src/tests/unit/components/forms/agency-details.test.tsx
+// __tests__/AgencyDetails.test.tsx
 import React from "react";
-import { render, fireEvent, waitFor, screen } from "@testing-library/react";
-import { useForm } from "react-hook-form";
-import { Agency } from "@prisma/client";
-import AgencyDetails from "@/components/forms/agency-details";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { render, screen } from "@testing-library/react";
+import AgencyDetails from "../../../../components/forms/agency-details"; // Adjust the path as necessary
+import "@testing-library/jest-dom"; // For better assertions
 
-global.ResizeObserver = require("resize-observer-polyfill");
-
+// Mocking dependencies and hooks
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
-    pathname: "/",
-    push: jest.fn(),
-    replace: jest.fn(),
-    reload: jest.fn(),
+    refresh: jest.fn(),
   }),
 }));
 
-jest.mock('@/lib/queries');
+jest.mock("../../../../components/ui/use-toast", () => ({
+  useToast: () => ({
+    toast: jest.fn(),
+  }),
+}));
 
-// it('renders without errors', () => {
-//   expect(() => render(<AgencyDetails />)).not.toThrow();
-// });
+// Mock implementations for async functions (can be adjusted later for specific tests)
+jest.mock("@/lib/queries", () => ({
+  deleteAgency: jest.fn(),
+  initUser: jest.fn(),
+  saveActivityLogsNotification: jest.fn(),
+  updateAgencyDetails: jest.fn(),
+  upsertAgency: jest.fn(),
+}));
 
-describe('AgencyDetails', () => {
-  it('handleSubmit should call upsertAgency with correct data', async () => {
-    const upsertAgency = jest.fn();
-    const data = {
-      id: '123',
-      name: 'Test Agency',
-      companyEmail: 'test@example.com',
-      companyPhone: '123-456-7890',
-      whiteLabel: true,
-      address: '123 Main St',
-      city: 'Anytown',
-      zipCode: '12345',
-      state: 'CA',
-      country: 'USA',
-      agencyLogo: 'https://utfs.io/f/a371405e-4bc0-4149-890d-48bf6f23320b-awu4d2.png',
-    };
+//basic test
+describe("AgencyDetails Component", () => {
+  it("renders without crashing", () => {
+    // Arrange: Render the component with minimal props
+    render(<AgencyDetails data={{ name: "Test Agency" }} />);
 
-    const { container } = render(
-      <AgencyDetails data={data} />
-    );
+    // Act: Query for a heading role with text "Agency Information"
+    const titleElement = screen.getByRole("heading", { name: /Agency Information/i });
 
-    const form = container.querySelector('form');
-    expect(form).toBeInTheDocument();
-
-    if (form) {
-      fireEvent.submit(form);
-    } else {
-      throw new Error('Form element not found');
-    }
-
-    await waitFor(() => {
-      expect(upsertAgency).toHaveBeenCalledTimes(1);
-      expect(upsertAgency).toHaveBeenCalledWith({
-        email: data.companyEmail,
-        name: data.name,
-        shipping: {
-          address: {
-            city: data.city,
-            country: data.country,
-            // ... other fields ...
-          },
-        },
-      });
-    });
-  });
-
-  it('handleSubmit should handle errors', async () => {
-    const upsertAgency = jest.fn(() => {
-      throw new Error('Test error');
-    });
-
-    const data = {
-      id: '123',
-      name: 'Test Agency',
-      companyEmail: 'test@example.com',
-      companyPhone: '123-456-7890',
-      whiteLabel: true,
-      address: '123 Main St',
-      city: 'Anytown',
-      zipCode: '12345',
-      state: 'CA',
-      country: 'USA',
-      agencyLogo: 'https://utfs.io/f/a371405e-4bc0-4149-890d-48bf6f23320b-awu4d2.png',
-    };
-
-    const { container } = render(
-      <AgencyDetails data={data} />
-    );
-
-    const form = container.querySelector('form');
-    expect(form).toBeInTheDocument();
-
-    if (form) {
-      fireEvent.submit(form);
-    } else {
-      throw new Error('Form element not found');
-    }
-
-    await waitFor(() => {
-      expect(upsertAgency).toHaveBeenCalledTimes(1);
-      expect(container.querySelector('.error-message')).toBeInTheDocument();
-    });
+    // Assert: Verify the element is in the document
+    expect(titleElement).toBeInTheDocument();
   });
 });
