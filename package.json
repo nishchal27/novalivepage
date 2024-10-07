@@ -12,7 +12,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.7",
+    "@clerk/nextjs": "^5.0.0",
     "@clerk/themes": "^1.7.9",
     "@hookform/resolvers": "^3.3.4",
     "@juggle/resize-observer": "^3.4.0",
